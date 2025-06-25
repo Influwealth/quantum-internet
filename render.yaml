@@ -1,0 +1,9 @@
+yml
+services:
+  - type: web
+    name: infraflow-agent
+    env: docker
+    repo: https://github.com/Influwealth/quantum-internet
+    branch: main
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true

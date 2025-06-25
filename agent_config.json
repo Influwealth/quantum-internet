@@ -1,0 +1,6 @@
+json
+{
+  "device_id": "influwealth-quantum-agent- 458",
+  "fallback_url": "https://api.sambanova.ai/v1/infer",
+  "model": "meta-llama- 3.3 - 70b"
+}
