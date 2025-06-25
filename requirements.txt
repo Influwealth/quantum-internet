@@ -1,0 +1,4 @@
+flask
+gunicorn
+pyautogen~=0.2.20
+requests
