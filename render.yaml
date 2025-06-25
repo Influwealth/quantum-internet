@@ -1,9 +1,10 @@
-yml
 services:
   - type: web
-    name: infraflow-agent
-    env: docker
-    repo: https://github.com/Influwealth/quantum-internet
-    branch: main
-    dockerfilePath: ./Dockerfile
-    autoDeploy: true
+    name: quantum-internet
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn main:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
