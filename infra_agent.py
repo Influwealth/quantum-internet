@@ -22,3 +22,4 @@ def send_prompt(prompt):
 if __name__ == "__main__":
     print("🤖 InfraFlow Local CLI Agent"); p = input("Enter prompt: "); send_prompt(p)
 
+
