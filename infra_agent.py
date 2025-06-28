@@ -1,15 +1,24 @@
-from fastapi import FastAPI
-import uvicorn
+import json, requests, os
+from datetime import datetime
 
-# This creates a proper web application server
-app = FastAPI(title="InfraFlow Agent Server")
+CONFIG_FILE = "agent_config.json"
+LOG_FILE = "mesh_local.log"
 
-@app.get("/")
-def read_root():
-    # This is the "status page" that will be shown
-    return {"status": "online", "message": "InfraFlow Agent Server is running. Ready for missions."}
+def load_config():
+    with open(CONFIG_FILE) as f: return json.load(f)
 
-# This part allows gunicorn to run the app
-# It is not directly called but needed by the server
+def log_event(event):
+    with open(LOG_FILE, "a") as f: f.write(f"{datetime.now().isoformat()} | {event}\n")
+
+def send_prompt(prompt):
+    config = load_config()
+    try:
+        r = requests.post("http://localhost:8000/start-mesh-mission", timeout=10)
+        print("Server response:", r.json())
+        log_event(f"Prompt: {prompt} | Status: {r.status_code}")
+    except Exception as e:
+        print(f"❌ Error: {e}"); log_event(f"Error: {e}")
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    print("🤖 InfraFlow Local CLI Agent"); p = input("Enter prompt: "); send_prompt(p)
+
