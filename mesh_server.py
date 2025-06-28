@@ -1,10 +1,14 @@
 import os
 import autogen
 from fastapi import FastAPI, BackgroundTasks, HTTPException
+from pydantic import BaseModel
 import uvicorn
 
 app = FastAPI(title="InfraFlow Quantum Internet Mesh Agent Server")
 llm_config = {}
+
+class MissionRequest(BaseModel):
+    mission: str
 
 def run_mesh_mission(mission: str):
     if not llm_config:
@@ -12,67 +16,21 @@ def run_mesh_mission(mission: str):
         return
     print(f"🌐 Mission received: {mission}")
 
-    infra_agent = autogen.AssistantAgent(
-        name="InfraAgent",
+    # Define the agent crew
+    architect = autogen.AssistantAgent(
+        name="The_Architect",
         llm_config=llm_config,
-        system_message="Central router and reasoning engine; delegates to specialized agents."
-    )
-    planner = autogen.AssistantAgent(
-        name="MeshPlanner",
-        llm_config=llm_config,
-        system_message="Break big missions into numbered tasks. End with TERMINATE."
-    )
-    strategist = autogen.AssistantAgent(
-        name="MeshStrategist",
-        llm_config=llm_config,
-        system_message="Execute tasks: deploy mesh, quantum routing, AI orchestration."
-    )
-    compliance = autogen.AssistantAgent(
-        name="ComplianceAgent",
-        llm_config=llm_config,
-        system_message="Ensure compliance with data, AI, quantum encryption laws."
-    )
-    finance = autogen.AssistantAgent(
-        name="FinanceAgent",
-        llm_config=llm_config,
-        system_message="Create monetization, pricing, subsidy strategies."
-    )
-    company_formation = autogen.AssistantAgent(
-        name="CompanyFormationAgent",
-        llm_config=llm_config,
-        system_message="Plan LLC, EIN, grants, legal filings."
-    )
-    quantum_security = autogen.AssistantAgent(
-        name="QuantumAISecurity",
-        llm_config=llm_config,
-        system_message="Design quantum encryption, QKD, threat detection."
-    )
-    qiaa = autogen.AssistantAgent(
-        name="QIAA",
-        llm_config=llm_config,
-        system_message="Customer interface: provision plans, billing, quantum-to-classical translation."
-    )
-    revenue_agent = autogen.AssistantAgent(
-        name="RevenueAgent",
-        llm_config=llm_config,
-        system_message="Forecast revenue, optimize plans, model ROI."
+        system_message="You are The Architect, an elite AI agent. Your mission is to write complete, production-ready Python functions ('tools') for other agents to use. You must present only the final, complete code in a single block for review."
     )
     commander = autogen.UserProxyAgent(
         name="MeshCommander",
         human_input_mode="NEVER",
-        max_consecutive_auto_reply=20,
+        max_consecutive_auto_reply=5,
         code_execution_config=False,
         is_termination_msg=lambda x: "TERMINATE" in x.get("content", "").upper(),
     )
 
-    groupchat = autogen.GroupChat(
-        agents=[commander, infra_agent, planner, strategist, compliance,
-                finance, company_formation, quantum_security, qiaa, revenue_agent],
-        messages=[],
-        max_round=25
-    )
-    manager = autogen.GroupChatManager(groupchat=groupchat, llm_config=llm_config)
-    commander.initiate_chat(manager, message=mission)
+    commander.initiate_chat(architect, message=mission)
     print("✅ Mesh mission completed.")
 
 @app.on_event("startup")
@@ -83,7 +41,7 @@ def startup_event():
         api_key = os.environ.get("SAMBANOVA_API_KEY")
         base_url = os.environ.get("SAMBANOVA_BASE_URL")
         if not api_key or not base_url:
-            raise ValueError("Missing SambaNova API config in environment variables.")
+            raise ValueError("Missing SambaNova API config.")
         llm_config = {
             "config_list": [{"model": "Meta-Llama-3.3-70B-Instruct",
                              "api_key": api_key, "base_url": base_url, "price": [0,0]}],
@@ -96,21 +54,16 @@ def startup_event():
 
 @app.get("/")
 def root_status():
-    return {"status": "online" if llm_config else "offline",
-            "engine": "InfraFlow Quantum Mesh Agent",
-            "message": "POST to /start-mesh-mission" if llm_config else "Check server logs for startup errors."}
+    return {"status": "online" if llm_config else "offline", "engine": "DeepSight Agent Core", "message": "Ready for missions. Send a POST to /start-mission"}
 
-@app.post("/start-mesh-mission")
-async def start_mesh_mission(background_tasks: BackgroundTasks):
+@app.post("/start-mission")
+async def start_mission(request: MissionRequest, background_tasks: BackgroundTasks):
     if not llm_config:
-        raise HTTPException(status_code=503, detail="AI Engine not configured or offline.")
-    mission = (
-        "MeshPlanner, create detailed plan for Quantum Internet beta. "
-        "QIAA provisions users; FinanceAgent models revenue; ComplianceAgent checks laws; "
-        "QuantumAISecurity ensures encryption; MeshStrategist executes step 1. TERMINATE."
-    )
-    background_tasks.add_task(run_mesh_mission, mission)
-    return {"status": "mission_started", "mission": mission}
+        raise HTTPException(status_code=503, detail="AI Engine is not configured or offline.")
+
+    mission_prompt = request.mission
+    background_tasks.add_task(run_mesh_mission, mission_prompt)
+    return {"status": "mission_accepted", "details": mission_prompt}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
