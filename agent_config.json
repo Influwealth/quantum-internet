@@ -1,6 +1,6 @@
-json
 {
-  "device_id": "influwealth-quantum-agent- 458",
-  "fallback_url": "https://api.sambanova.ai/v1/infer",
-  "model": "meta-llama- 3.3 - 70b"
+  "agent_name": "infraflow-default",
+  "firebase_project": "your-firebase-id",
+  "routing_strategy": "hybrid",
+  "use_sambanova": true
 }
