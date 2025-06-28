@@ -1,20 +1,15 @@
-import json
-import requests
+from fastapi import FastAPI
+import uvicorn
 
-def local_router(prompt):
-    if "status" in prompt:
-        return " Mesh node online."
-    return None
+# This creates a proper web application server
+app = FastAPI(title="InfraFlow Agent Server")
 
-def samba_infer(prompt):
-    return requests.post("https://api.sambanova.ai/v1/infer", json={
-        "prompt": prompt,
-        "key": "39f8beea-7890-4985-b768-bce87df7a120"
-    }).json().get("response", "No response")
+@app.get("/")
+def read_root():
+    # This is the "status page" that will be shown
+    return {"status": "online", "message": "InfraFlow Agent Server is running. Ready for missions."}
 
-while True:
-    prompt = input(" > ")
-    response = local_router(prompt)
-    if not response:
-        response = samba_infer(prompt)
-    print(f"InfraFlow: {response}")
+# This part allows gunicorn to run the app
+# It is not directly called but needed by the server
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
