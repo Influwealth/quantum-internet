@@ -1,4 +1,4 @@
 flask
 gunicorn
-pyautogen~=0.2.20
+pyautogen==0.2.29
 requests
