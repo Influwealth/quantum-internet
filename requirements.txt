@@ -6,3 +6,4 @@ uvicorn
 python-dotenv
 ag2
 gunicorn
+openai
