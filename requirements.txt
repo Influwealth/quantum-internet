@@ -1,7 +1,6 @@
-  crewai
-crewai[tools]
-langchain-openai
 fastapi
 uvicorn
-python-dotenv
+gunicorn
 requests
+python-dotenv
+autogen
