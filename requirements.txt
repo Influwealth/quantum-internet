@@ -1,3 +1,7 @@
-streamlit
-requests 
-uvicorn 
+  crewai
+crewai[tools]
+langchain-openai
+fastapi
+uvicorn
+python-dotenv
+requests
