@@ -5,3 +5,7 @@ services:
     plan: free
     autoDeploy: true
     healthCheckPath: /
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - fromGroup: sambanova-keys # This will securely pull your API keys
+
