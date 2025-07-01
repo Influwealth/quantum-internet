@@ -1,9 +1,6 @@
-flask
-uvicorn
-requests
 fastapi
 uvicorn
-python-dotenv
-ag2
-gunicorn
-openai
+requests
+crewai 
+crewai [tools]
+langchain-openai
