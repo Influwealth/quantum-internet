@@ -64,10 +64,11 @@ def startup_event():
         if not api_key or not base_url:
             raise ValueError("Missing SambaNova API config.")
         
+        # THIS IS THE UPGRADED MODEL
         llm_config = {
-            "config_list": [{"model": "Meta-Llama-3.3-70B-Instruct", "api_key": api_key, "base_url": base_url}]
+            "config_list": [{"model": "Llama-4-Maverick-17B-128E-Instruct", "api_key": api_key, "base_url": base_url}]
         }
-        print("✅ AI Engine is ONLINE and configured.")
+        print("✅ AI Engine is ONLINE and configured with Llama 4.")
     except Exception as e:
         print(f"❌ FATAL STARTUP ERROR: {e}")
 
@@ -83,6 +84,8 @@ async def start_mission(request: MissionRequest, background_tasks: BackgroundTas
     
     background_tasks.add_task(run_autogen_mission, request.mission)
     return {"status": "mission_accepted", "details": request.mission}
+
+
 
 
 
